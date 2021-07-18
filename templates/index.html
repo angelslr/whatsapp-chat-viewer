@@ -1,0 +1,182 @@
+<!-- v0.1 06/26/2020 -->
+<!DOCTYPE html>
+
+<head>
+	<title>WhatsApp Visualizer</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+		html {
+			font-family: Arial, Helvetica, sans-serif;
+			--shadow-color: rgba(0, 0, 0, 0.6);
+		}
+
+		.date {
+			clear: both;
+			position: relative;
+			margin: 0 auto;
+			text-align: center;
+			background-color: rgb(198, 255, 236);
+			border-radius: 10px;
+			width: 80px;
+			height: 40px;
+			-moz-box-shadow: 0 0 5px var(--shadow-color);
+			-webkit-box-shadow: 0 0 5px var(--shadow-color);
+			-o-box-shadow: 0 0 5px var(--shadow-color);
+			box-shadow: 0 0 5px var(--shadow-color);
+		}
+
+		.date p {
+			top: 50%;
+			position: relative;
+			transform: translateY(-50%);
+		}
+
+		#container {
+			max-width: 1024px;
+			margin: 2px;
+			width: 100%;
+			left: 50%;
+			top: 50px;
+			position: relative;
+			margin-top: 100px;
+			transform: translate(-50%);
+			padding: 1em;
+		}
+
+		.principal,
+		.secondary {
+			max-width: 80%;
+			clear: both;
+			position: relative;
+			border-radius: 20px;
+			word-wrap: break-word;
+			padding: 0.5px;
+			margin-top: 15px;
+			margin-bottom: 15px;
+			padding-right: 10px;
+			padding-left: 10px;
+			-moz-box-shadow: 0 0 5px var(--shadow-color);
+			-webkit-box-shadow: 0 0 5px var(--shadow-color);
+			-o-box-shadow: 0 0 5px var(--shadow-color);
+			box-shadow: 0 0 5px var(--shadow-color);
+		}
+
+		.principal {
+			float: right;
+			text-align: right;
+			background-color: aquamarine;
+			margin-left: auto;
+		}
+
+		.secondary {
+			float: left;
+			text-align: left;
+			background-color: rgb(255, 244, 230);
+		}
+
+		#hour {
+			font-size: 9pt;
+		}
+
+		#person {
+			font-style: italic;
+			font-weight: bold;
+		}
+	</style>
+
+	<script>
+		function read() {
+			var objJSON = JSON.parse('{{ data | tojson | safe }}');
+			lastHourPrincipal = 0;
+			debugger;
+			lastHourSecondary = 0;
+			principal = "John Vega";
+			currentDate = 0;
+			lastPerson = 0;
+			lines = 0;
+			var newDiv;
+
+			for (var i = 0; i < objJSON.date.length; i++) {
+				if (objJSON.date[i] != currentDate) {
+					currentDate = objJSON.date[i];
+
+					let newDate = document.createElement('div');
+					newDate.className = "date";
+
+					let d = document.createElement('p');
+					let dateText = document.createTextNode(currentDate);
+					d.appendChild(dateText);
+					newDate.appendChild(d)
+					document.getElementById("container").appendChild(newDate)
+				}
+
+				if (objJSON.person[i] == principal) {
+					if (objJSON.hour[i] == lastHourPrincipal && principal == lastPerson) {
+						innerMessage();
+					}
+					else {
+						innerRead("principal")
+						lastHourPrincipal = objJSON.hour[i];
+					}
+				}
+				else {
+					if (objJSON.hour[i] == lastHourSecondary && objJSON.person[i] == lastPerson) {
+						innerMessage();
+					}
+					else {
+						innerRead("secondary");
+						lastHourSecondary = objJSON.hour[i];
+					}
+				}
+			}
+			function innerMessage() {
+				debugger;
+				var mes = document.createElement('p');
+				mes.id = "message";
+				text = document.createTextNode(objJSON.message[i]);
+				mes.appendChild(text);
+				newDiv.appendChild(mes)
+				lines++;
+			}
+
+			function innerRead(cName) {
+				debugger;
+
+				newDiv = document.createElement('div');
+				newDiv.className = cName;
+
+				var h = document.createElement('p');
+				h.id = "hour";
+				var text = document.createTextNode(objJSON.hour[i]);
+				h.appendChild(text);
+				newDiv.appendChild(h)
+
+				var per = document.createElement('p');
+				per.id = "person";
+				text = document.createTextNode(objJSON.person[i]);
+				per.appendChild(text);
+				newDiv.appendChild(per)
+
+				var mes = document.createElement('p');
+				mes.id = "message";
+				text = document.createTextNode(objJSON.message[i]);
+				mes.appendChild(text);
+				newDiv.appendChild(mes)
+
+				document.getElementById("container").appendChild(newDiv)
+				lastPerson = objJSON.person[i];
+				lines++;
+			}
+			document.getElementById("lines").innerHTML = "Messages: " + lines;
+		}
+	</script>
+</head>
+
+<body onload="read()">
+	<div id="container">
+		<p id="lines"></p>
+	</div>
+</body>
+
+</html
