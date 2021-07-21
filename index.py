@@ -10,23 +10,10 @@ app = Flask(__name__)
 cors = CORS(app)
 api = Api(app)
 
-todos = {
-	1: {'task': 'Write hello world', 'summary': 'Write code using Python.'},
-	2: {'task': 'Task 2', 'summary': 'Write task 2.'},
-	3: {'task': 'Task 3', 'summary': 'Write task 3.'}
-}
-
 taskPostArgs = reqparse.RequestParser()
 taskPostArgs.add_argument('file', type=str, help='File path is required.', required=True)
 
-class ToDoList(Resource):
-	def get(self):
-		return todos
-
 class processor(Resource):
-	def get(self, todo_id):
-		return todos[todo_id]
-
 	def post(self):
 		args = taskPostArgs.parse_args()
 		filePath = args['file']
