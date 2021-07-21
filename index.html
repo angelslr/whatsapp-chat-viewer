@@ -9,9 +9,20 @@
 	<script type="text/javascript" src="js/functions.js"></script>
 </head>
 
-<body onload="read()">
+<body>
 	<div id="container">
-		<p id="lines"></p>
+		<label for="filePath">File path:</label>
+		<input type="text" id="filePath" name="filePath" placeholder="Enter the file path"><br><br>
+
+		<label for="mainParticipant">Main participant:</label>
+		<input type="text" id="mainParticipant" name="mainParticipant" placeholder="Name of the main participant"><br><br>
+
+		<a class="cta"><button type="button" onclick="check()">Go</button></a>
+
+		<p id="messages"></p>
+
+		<div id="chat">
+		</div>
 	</div>
 </body>
 

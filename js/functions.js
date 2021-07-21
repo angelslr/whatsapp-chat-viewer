@@ -16,23 +16,38 @@ async function toBackPOST(endpoint, jsonString) {
 	return response.json();
 }
 
-async function read() {
+function check() {
+	let path = document.getElementById('filePath').value;
+	let name = document.getElementById('mainParticipant').value;
+
+	if(path == '' || name == ''){
+		alert('Some inputs are empty');
+	}
+	else{
+		let chat = document.getElementById('chat');
+		chat.innerHTML = "";
+		chat.lastChild = "";
+		read(path, name)
+	}
+}
+
+async function read(path, name) {
 	debugger;
-	var objJSON = await toBackPOST(endP, {"file": "/run/media/angel/Datos/MEGA/Documentos/ProyectosPython/WhatsAppVisualizer/test.txt"});
+	var objJSON = await toBackPOST(endP, {"file": path});
 
 	lastHourPrincipal = 0;
 	lastHourSecondary = 0;
-	principal = "John Vega";
+	principal = name;
 	currentDate = 0;
 	lastPerson = 0;
-	lines = 0;
+	messages = 0;
 	var newDiv;
 
 	if(objJSON[0].date == 0 || objJSON[0].hour == 0 || objJSON[0].person == 0){
 		objJSON[0].date = '-';
 		objJSON[0].hour = '00:00';
 		objJSON[0].person = 'WhatsApp';
-		lines -= 1;
+		messages -= 1;
 	}
 	for (var i = 0; i < objJSON.length; i++) {
 		if (objJSON[i].date != currentDate) {
@@ -44,7 +59,7 @@ async function read() {
 			let dateText = document.createTextNode(currentDate);
 			d.appendChild(dateText);
 			newDate.appendChild(d)
-			document.getElementById("container").appendChild(newDate)
+			document.getElementById("chat").appendChild(newDate)
 		}
 
 		if (objJSON[i].person == principal) {
@@ -73,7 +88,7 @@ async function read() {
 		text = document.createTextNode(objJSON[i].message);
 		mes.appendChild(text);
 		newDiv.appendChild(mes)
-		lines++;
+		messages++;
 	}
 
 	function innerRead(cName) {
@@ -100,9 +115,9 @@ async function read() {
 		mes.appendChild(text);
 		newDiv.appendChild(mes)
 
-		document.getElementById("container").appendChild(newDiv)
+		document.getElementById("chat").appendChild(newDiv)
 		lastPerson = objJSON[i].person;
-		lines++;
+		messages++;
 	}
-	document.getElementById("lines").innerHTML = "Messages: " + lines;
+	document.getElementById("messages").innerHTML = "Messages: " + messages;
 }
