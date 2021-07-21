@@ -17,11 +17,10 @@ async function toBackPOST(endpoint, jsonString) {
 }
 
 async function read() {
-	var objJSON = await toBackPOST(endP, {"file": "/run/media/angel/Datos/MEGA/Documentos/ProyectosPython/WhatsAppVisualizer/test.txt"});
-	console.log(objJSON);
-	console.log(objJSON[0].message);
-	lastHourPrincipal = 0;
 	debugger;
+	var objJSON = await toBackPOST(endP, {"file": "/run/media/angel/Datos/MEGA/Documentos/ProyectosPython/WhatsAppVisualizer/test.txt"});
+
+	lastHourPrincipal = 0;
 	lastHourSecondary = 0;
 	principal = "John Vega";
 	currentDate = 0;
@@ -29,10 +28,15 @@ async function read() {
 	lines = 0;
 	var newDiv;
 
-	for (var i = 0; i < objJSON.date.length; i++) {
-		if (objJSON.date[i] != currentDate) {
-			currentDate = objJSON.date[i];
-
+	if(objJSON[0].date == 0 || objJSON[0].hour == 0 || objJSON[0].person == 0){
+		objJSON[0].date = '-';
+		objJSON[0].hour = '00:00';
+		objJSON[0].person = 'WhatsApp';
+		lines -= 1;
+	}
+	for (var i = 0; i < objJSON.length; i++) {
+		if (objJSON[i].date != currentDate) {
+			currentDate = objJSON[i].date;
 			let newDate = document.createElement('div');
 			newDate.className = "date";
 
@@ -43,22 +47,22 @@ async function read() {
 			document.getElementById("container").appendChild(newDate)
 		}
 
-		if (objJSON.person[i] == principal) {
-			if (objJSON.hour[i] == lastHourPrincipal && principal == lastPerson) {
+		if (objJSON[i].person == principal) {
+			if (objJSON[i].hour == lastHourPrincipal && principal == lastPerson) {
 				innerMessage();
 			}
 			else {
 				innerRead("principal")
-				lastHourPrincipal = objJSON.hour[i];
+				lastHourPrincipal = objJSON[i].hour;
 			}
 		}
 		else {
-			if (objJSON.hour[i] == lastHourSecondary && objJSON.person[i] == lastPerson) {
+			if (objJSON[i].hour == lastHourSecondary && objJSON[i].person == lastPerson) {
 				innerMessage();
 			}
 			else {
 				innerRead("secondary");
-				lastHourSecondary = objJSON.hour[i];
+				lastHourSecondary = objJSON[i].hour;
 			}
 		}
 	}
@@ -66,7 +70,7 @@ async function read() {
 		debugger;
 		var mes = document.createElement('p');
 		mes.id = "message";
-		text = document.createTextNode(objJSON.message[i]);
+		text = document.createTextNode(objJSON[i].message);
 		mes.appendChild(text);
 		newDiv.appendChild(mes)
 		lines++;
@@ -80,24 +84,24 @@ async function read() {
 
 		var h = document.createElement('p');
 		h.id = "hour";
-		var text = document.createTextNode(objJSON.hour[i]);
+		var text = document.createTextNode(objJSON[i].hour);
 		h.appendChild(text);
 		newDiv.appendChild(h)
 
 		var per = document.createElement('p');
 		per.id = "person";
-		text = document.createTextNode(objJSON.person[i]);
+		text = document.createTextNode(objJSON[i].person);
 		per.appendChild(text);
 		newDiv.appendChild(per)
 
 		var mes = document.createElement('p');
 		mes.id = "message";
-		text = document.createTextNode(objJSON.message[i]);
+		text = document.createTextNode(objJSON[i].message);
 		mes.appendChild(text);
 		newDiv.appendChild(mes)
 
 		document.getElementById("container").appendChild(newDiv)
-		lastPerson = objJSON.person[i];
+		lastPerson = objJSON[i].person;
 		lines++;
 	}
 	document.getElementById("lines").innerHTML = "Messages: " + lines;
