@@ -1,29 +1,30 @@
-var url = "http://localhost:3000/";
+var url = "http://192.168.1.60:3000/";
 
 /*ENDPOINT*/
 
 //POST
 var endP = "processor";
 
-async function toBackPOST(endpoint, jsonString) {
+async function toBackPOST(endpoint, data) {
 	const response = await fetch(url + endpoint, {
 		method: 'POST',
-		body: JSON.stringify(jsonString),
-		headers: {
-			"Content-type": "application/json"
-		}
+		body: data,
 	});
 	return response.json();
 }
 
-function check() {
+
+
+
+
+async function check() {
 	let path = document.getElementById('filePath').value;
 	let name = document.getElementById('mainParticipant').value;
 
-	if(path == '' || name == ''){
+	if (path == '' || name == '') {
 		alert('Some inputs are empty');
 	}
-	else{
+	else {
 		let chat = document.getElementById('chat');
 		chat.innerHTML = "";
 		chat.lastChild = "";
@@ -33,8 +34,26 @@ function check() {
 
 async function read(path, name) {
 	debugger;
-	var objJSON = await toBackPOST(endP, {"file": path});
+	
+	const formData = new FormData();
+	const fileField = document.querySelector('input[type="file"]');
 
+	formData.append('file', fileField.files[0]);
+	var objJSON = await toBackPOST(endP, formData);
+
+	/*const r = await fetch(url + endP, {
+		method: 'POST',
+		body: formData
+	})
+		.then(response => response.json())
+		.then(result => {
+			console.log('Success:', result);
+		})
+		.catch(error => {
+			console.error('Error:', error);
+		});
+*/
+	console.log(objJSON);
 	lastHourPrincipal = 0;
 	lastHourSecondary = 0;
 	principal = name;
@@ -43,7 +62,7 @@ async function read(path, name) {
 	messages = 0;
 	var newDiv;
 
-	if(objJSON[0].date == 0 || objJSON[0].hour == 0 || objJSON[0].person == 0){
+	if (objJSON[0].date == 0 || objJSON[0].hour == 0 || objJSON[0].person == 0) {
 		objJSON[0].date = '-';
 		objJSON[0].hour = '00:00';
 		objJSON[0].person = 'WhatsApp';

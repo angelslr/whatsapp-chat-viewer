@@ -1,25 +1,34 @@
 #v0.1 06/26/2020
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS, cross_origin
 from flask_restful import Resource, Api, reqparse
+import werkzeug
+from werkzeug.utils import secure_filename
 from io import open
+import os
 import re
 import time
+
+UPLOAD_FOLDER = '/run/media/ramdisk/'
+ALLOWED_EXTENSIONS = {'txt'}
 
 app = Flask(__name__)
 cors = CORS(app)
 api = Api(app)
-
-taskPostArgs = reqparse.RequestParser()
-taskPostArgs.add_argument('file', type=str, help='File path is required.', required=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 class processor(Resource):
 	def post(self):
-		args = taskPostArgs.parse_args()
-		filePath = args['file']
-
 		start_time = time.time()
-		textFile = open(filePath, "r")
+
+		parse = reqparse.RequestParser()
+		parse.add_argument('file', type=werkzeug.datastructures.FileStorage, location='files')
+		args = parse.parse_args()
+		file = args['file']
+
+		filename = secure_filename(file.filename)
+		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		textFile = open(UPLOAD_FOLDER + filename, "r")
 		date = 0
 		hour = 0
 		person = 0
@@ -60,4 +69,4 @@ class processor(Resource):
 api.add_resource(processor, '/processor')
 
 if __name__ == '__main__':
-	app.run(port=3000, debug=True)
+	app.run(host='0.0.0.0', port=3000, debug=True)
