@@ -1,8 +1,6 @@
 var url = "http://192.168.1.60:3000/";
 
 /*ENDPOINT*/
-
-//POST
 var endP = "processor";
 
 async function toBackPOST(endpoint, data) {
@@ -13,47 +11,37 @@ async function toBackPOST(endpoint, data) {
 	return response.json();
 }
 
-
-
-
-
 async function check() {
-	let path = document.getElementById('filePath').value;
+	let file = document.getElementById('filePath').value;
 	let name = document.getElementById('mainParticipant').value;
 
-	if (path == '' || name == '') {
+	if (file == '' || name == '') {
 		alert('Some inputs are empty');
 	}
 	else {
-		let chat = document.getElementById('chat');
-		chat.innerHTML = "";
-		chat.lastChild = "";
-		read(path, name)
+		read(name)
 	}
 }
 
-async function read(path, name) {
-	debugger;
-	
+async function read(name) {
+
+	//Show animation load
+	var animation = document.getElementById('loadContainer');
+	animation.style.display = 'block';
+	animation.style.opacity = '1';
+
+	//Clean the chat
+	let chat = document.getElementById('chat');
+	chat.innerHTML = "";
+	chat.lastChild = "";
+
+	//Send txt file to backend
 	const formData = new FormData();
 	const fileField = document.querySelector('input[type="file"]');
 
 	formData.append('file', fileField.files[0]);
 	var objJSON = await toBackPOST(endP, formData);
 
-	/*const r = await fetch(url + endP, {
-		method: 'POST',
-		body: formData
-	})
-		.then(response => response.json())
-		.then(result => {
-			console.log('Success:', result);
-		})
-		.catch(error => {
-			console.error('Error:', error);
-		});
-*/
-	console.log(objJSON);
 	lastHourPrincipal = 0;
 	lastHourSecondary = 0;
 	principal = name;
@@ -68,6 +56,8 @@ async function read(path, name) {
 		objJSON[0].person = 'WhatsApp';
 		messages -= 1;
 	}
+
+	
 	for (var i = 0; i < objJSON.length; i++) {
 		if (objJSON[i].date != currentDate) {
 			currentDate = objJSON[i].date;
@@ -80,8 +70,8 @@ async function read(path, name) {
 			newDate.appendChild(d)
 			document.getElementById("chat").appendChild(newDate)
 		}
-
 		if (objJSON[i].person == principal) {
+			//If the name of main participant and hour are the same as the current message, the message is added to the same chat balloon
 			if (objJSON[i].hour == lastHourPrincipal && principal == lastPerson) {
 				innerMessage();
 			}
@@ -91,17 +81,19 @@ async function read(path, name) {
 			}
 		}
 		else {
+			//If the last person and hour are the same as the current message, the message is added to the same chat balloon
 			if (objJSON[i].hour == lastHourSecondary && objJSON[i].person == lastPerson) {
 				innerMessage();
 			}
+			//If not, a new chat is created
 			else {
 				innerRead("secondary");
 				lastHourSecondary = objJSON[i].hour;
 			}
 		}
 	}
+	//Append messages to a chat
 	function innerMessage() {
-		debugger;
 		var mes = document.createElement('p');
 		mes.id = "message";
 		text = document.createTextNode(objJSON[i].message);
@@ -110,9 +102,8 @@ async function read(path, name) {
 		messages++;
 	}
 
+	//Add a new chat balloon
 	function innerRead(cName) {
-		debugger;
-
 		newDiv = document.createElement('div');
 		newDiv.className = cName;
 
@@ -139,4 +130,8 @@ async function read(path, name) {
 		messages++;
 	}
 	document.getElementById("messages").innerHTML = "Messages: " + messages;
+
+	//Hide animation load
+	animation.style.display = 'none';
+	animation.style.opacity = '0';
 }

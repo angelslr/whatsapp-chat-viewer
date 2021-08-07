@@ -10,22 +10,23 @@
 </head>
 
 <body>
+	<div id="loadContainer" style="display: none;">
+		<div id="loadIcon">
+		</div>
+	</div>
 	<div class="container">
-		<form action="">
-			<label for="filePath">File path:</label>
-		<input type="file" id="filePath" name="file" placeholder="Enter the file path"><br><br>
-		</form>
-		<label for="mainParticipant">Main participant:</label>
-		<input type="text" id="mainParticipant" name="mainParticipant"
-			placeholder="Name of the main participant"><br><br>
-
-		<a class="cta"><button type="button" onclick="check()">Go</button></a>
-
-		<p id="messages"></p>
-
+		
+		<div class="buttonWrap">
+			<label class="newButton" for="filePath">File</label>
+			<input type="file" id="filePath" name="file"><br><br>
+			<input type="text" id="mainParticipant" name="mainParticipant" placeholder="Name of the main participant"><br><br>
+			<a class="cta"><button type="button" id="buttonView" onclick="check()">View Chat</button></a>
+			<p id="messages"></p>
+		</div>
 		<div id="chat">
 		</div>
 	</div>
+
 </body>
 
 </html
