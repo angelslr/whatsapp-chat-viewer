@@ -1,6 +1,6 @@
 #v0.1 06/26/2020
-from flask import Flask, request
-from flask_cors import CORS, cross_origin
+from flask import Flask
+from flask_cors import CORS
 from flask_restful import Resource, Api, reqparse
 import werkzeug
 from werkzeug.utils import secure_filename
@@ -9,7 +9,7 @@ import os
 import re
 import time
 
-UPLOAD_FOLDER = '/run/media/ramdisk/'
+UPLOAD_FOLDER = os.environ['HOME'] + '/'
 ALLOWED_EXTENSIONS = {'txt'}
 
 app = Flask(__name__)
@@ -63,7 +63,7 @@ class processor(Resource):
 			data.append({'date': date, 'hour': hour, 'person': person, 'message': message})
 
 		print("--- %s seconds ---" % (time.time() - start_time))
-
+		os.remove(UPLOAD_FOLDER + filename)
 		return data
 
 api.add_resource(processor, '/processor')
